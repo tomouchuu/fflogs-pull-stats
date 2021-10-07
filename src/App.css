@@ -1,0 +1,10 @@
+.App {
+  text-align: center;
+  color: white;
+  font-size: 3rem;
+}
+
+.App p {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+}
