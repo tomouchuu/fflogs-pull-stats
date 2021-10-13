@@ -1,7 +1,7 @@
-import {format} from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import FightDataType from '../types/fight-data';
+import { getFightTimeFormat } from '../utils/getfighttime';
 
 function FightData({bossPercentage, fightPercentage, lastPhase, endTime, startTime}: FightDataType) {
   const [fightTime, setFightTime] = useState('');
@@ -26,7 +26,7 @@ function FightData({bossPercentage, fightPercentage, lastPhase, endTime, startTi
 
   useEffect(() => {
     if (endTime && startTime) {
-      setFightTime(` - ${format(endTime - startTime, 'm:ss')}`);
+      setFightTime(` - ${getFightTimeFormat(startTime, endTime)}`);
     }
   }, [endTime, startTime]);
 

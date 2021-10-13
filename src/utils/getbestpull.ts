@@ -1,4 +1,5 @@
 import FightDataType from '../types/fight-data'
+import getFightTime from './getfighttime';
 
 interface Reports {
   fights: FightDataType[]
@@ -7,12 +8,29 @@ interface Reports {
 let bestPhase = 0;
 let bestFightPercentage = 0;
 let bestBossHealth = 100;
+let bestFightTime = 0;
+
+function isBestTime(fight: FightDataType): boolean {
+  if (fight.startTime && fight.endTime) {
+    const fightTime = getFightTime(fight.startTime, fight.endTime);
+
+    if (fightTime >= bestFightTime) {
+      bestFightTime = fightTime;
+      return true;
+    }
+  }
+
+  return false;
+}
 
 function calculateBestPull(fight: FightDataType): boolean {
   if (fight.lastPhase > bestPhase) {
     // If we've gotten to a new phase set that to best and reset the boss health
     bestPhase = fight.lastPhase;
     bestBossHealth = 100;
+    if (fight.startTime && fight.endTime) {
+      isBestTime(fight);
+    }
     return true;
   } else if (fight.lastPhase === bestPhase) {
     // Else if they are in the current best phase check the health is lower or equal OR account for TEA Phase 3
@@ -21,19 +39,37 @@ function calculateBestPull(fight: FightDataType): boolean {
       if (fight.fightPercentage >= bestFightPercentage) {
         bestFightPercentage = fight.fightPercentage;
         bestBossHealth = fight.fightPercentage;
-        return true;
+
+        // Check if we do have times
+        if (fight.startTime && fight.endTime) {
+          // If we do work out if it's better or not
+          return isBestTime(fight);
+        } else {
+          // Else we can just mark it as true
+          return true;
+        }
+
       } else {
-        return false;
+        return isBestTime(fight);
       }
     } else if (fight.bossPercentage <= bestBossHealth) {
       // If they've done more or equal damage to the boss
       bestBossHealth = fight.bossPercentage;
-      return true;
+
+      // Check if we do have times
+      if (fight.startTime && fight.endTime) {
+        // If we do work out if it's better or not
+        return isBestTime(fight);
+      } else {
+        // Else we can just mark it as true
+        return true;
+      }
+
     } else {
-      return false;
+      return isBestTime(fight);
     }
   } else {
-    return false;
+    return isBestTime(fight);
   }
 }
 

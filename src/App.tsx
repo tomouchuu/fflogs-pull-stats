@@ -62,9 +62,9 @@ const todayReportQuery = gql`
 
 
 const historicReportQuery = gql`
-  query($userId: Int, $zoneId: Int, $encounterId: Int, $reportsFrom: Float) {
+  query($userId: Int, $zoneId: Int, $encounterId: Int, $reportsFrom: Float, $reportsTo: Float) {
     reportData {
-      reports(userID: $userId, zoneID: $zoneId, startTime: $reportsFrom) {
+      reports(userID: $userId, zoneID: $zoneId, startTime: $reportsFrom, endTime: $reportsTo) {
         data {
            fights(encounterID: $encounterId) {
             bossPercentage
@@ -123,8 +123,14 @@ function App() {
   
   const [historicReports, reexecuteHistoricQuery] = useQuery({
     query: historicReportQuery,
-    variables: {userId, zoneId, encounterId, reportsFrom: historicReportsFrom},
-    pause: !userId || !zoneId || !encounterId || !historicReportsFrom
+    variables: {
+      userId,
+      zoneId,
+      encounterId,
+      reportsFrom: historicReportsFrom,
+      reportsTo: todayReportsFrom
+    },
+    pause: !userId || !zoneId || !encounterId || !historicReportsFrom || !todayReportsFrom
   })
   const { data: historicReportData, fetching: historicFetching, error: historicError } = historicReports;
 
