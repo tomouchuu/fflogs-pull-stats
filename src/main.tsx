@@ -4,6 +4,7 @@ import { createClient, Provider } from 'urql'
 
 import './index.css'
 import App from './App'
+import PullsOnly from './Pulls-Only';
 
 const client = createClient({
   url: 'https://www.fflogs.com/api/v2/user',
@@ -18,7 +19,7 @@ const client = createClient({
 ReactDOM.render(
   <React.StrictMode>
     <Provider value={client}>
-      <App />
+      <PullsOnly />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
