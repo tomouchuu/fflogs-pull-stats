@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { gql } from '@urql/core'
 import { useQuery } from 'urql'
-import { getUnixTime, subDays } from 'date-fns'
+import { getUnixTime, subHours } from 'date-fns'
 
 import FightDataType from './types/fight-data'
 import './App.css'
@@ -77,8 +77,10 @@ const historicReportQuery = gql`
 function PullsOnly() {
   const [zoneId, setZoneId] = useState(0)
   const [encounterId, setEncounterId] = useState(0)
-  const [historicReportsFrom] = useState(import.meta.env.VITE_HISTORIC_START_DATE)
-  const [todayReportsFrom] = useState(`${getUnixTime(subDays(new Date(), 1))}000`)
+  const historicUnixFloatTime = parseFloat(import.meta.env.VITE_HISTORIC_START_DATE)
+  const [historicReportsFrom] = useState(historicUnixFloatTime)
+  const todayUnixFloatTime = parseFloat(`${getUnixTime(subHours(new Date(), 12))}000`)
+  const [todayReportsFrom] = useState(todayUnixFloatTime)
 
   const [pullsToday, updatePullsToday] = useState(0)
   const [totalPulls, updateTotalPulls] = useState(0)
