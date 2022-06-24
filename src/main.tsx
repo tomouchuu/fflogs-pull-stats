@@ -19,7 +19,7 @@ const client = createClient({
 ReactDOM.render(
   <React.StrictMode>
     <Provider value={client}>
-      <PullsOnly />
+      <App />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

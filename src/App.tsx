@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { gql } from '@urql/core'
 import { useQuery } from 'urql'
-import { getUnixTime, subDays } from 'date-fns'
+import { getUnixTime, subHours } from 'date-fns'
 
 import FightData from './components/fight-data'
 import FightDataType from './types/fight-data'
 
-import getHistoricBestPull from './utils/getbestpull'
+import getTodayBestPull from './utils/getbestpull'
+import getHistoricBestPull from './utils/gethistoricbestpull'
 import './App.css'
 
 const getUserQuery = gql`
@@ -88,8 +89,10 @@ const BaseFight: FightDataType = {
 function App() {
   const [zoneId, setZoneId] = useState(0)
   const [encounterId, setEncounterId] = useState(0)
-  const [historicReportsFrom] = useState(import.meta.env.VITE_HISTORIC_START_DATE)
-  const [todayReportsFrom] = useState(`${getUnixTime(subDays(new Date(), 1))}000`)
+  const historicUnixFloatTime = parseFloat(import.meta.env.VITE_HISTORIC_START_DATE)
+  const [historicReportsFrom] = useState(historicUnixFloatTime)
+  const todayUnixFloatTime = parseFloat(`${getUnixTime(subHours(new Date(), 16))}000`)
+  const [todayReportsFrom] = useState(todayUnixFloatTime)
 
   const [bestToday, updateBestToday] = useState(BaseFight)
   const [pullsToday, updatePullsToday] = useState(0)
@@ -163,20 +166,22 @@ function App() {
       console.log(`Getting today's reports for zone:${zoneId} and encounter:${encounterId}`);
 
       const todayReportsArr = todayReportData.reportData.reports.data;
-      const bestPull = getHistoricBestPull(todayReportsArr);
+      const bestPull = getTodayBestPull(todayReportsArr);
 
       updateBestToday(bestPull);
     }
   }, [fetching, todayReportData]);
 
   useEffect(() => {
-    if (!historicFetching && historicReportData) {
+    if (!historicFetching && historicReportData && todayReportData) {
       console.log(`Getting historic reports for zone:${zoneId} and encounter:${encounterId}`);
+      const todayReportsArr = todayReportData.reportData.reports.data;
       const historicDataArr = historicReportData.reportData.reports.data;
-      const besteverPull = getHistoricBestPull(historicDataArr);
+      const totalReportDataArr = todayReportsArr.concat(historicDataArr);
+      const besteverPull = getHistoricBestPull(totalReportDataArr);
       updateBestTotal(besteverPull);
     }
-  }, [historicFetching, historicReportData]);
+  }, [historicFetching, todayReportData, historicReportData]);
 
   useEffect(() => {
     if (!fetching && todayReportData && historicReportData) {
@@ -201,23 +206,23 @@ function App() {
   if (error) return <p>Oh no... {error.message}</p>;
   if (historicError) return <p>Oh no... {historicError.message}</p>;
 
-  if (bestToday.lastPhase >= 0 && bestToday.bossPercentage <= 100) {
+  if (bestToday.lastPhase >= 0 && bestToday.fightPercentage <= 100) {
     return (
       <div className="App">
         <main>
           <p>
-            Best Today:&nbsp;
+            <span style={{textDecoration: 'underline'}}>Best Today</span>
             <FightData bossPercentage={bestToday.bossPercentage} fightPercentage={bestToday.fightPercentage} lastPhase={bestToday.lastPhase} startTime={bestToday.startTime} endTime={bestToday.endTime} />
+            Pulls Today: {pullsToday}
           </p>
-          <p>Pulls Today: {pullsToday}</p>
           {
-            bestTotal.lastPhase >= 0 && bestTotal.bossPercentage <= 100 && (
+            bestTotal.lastPhase >= 0 && bestTotal.fightPercentage <= 100 && (
               <>
                 <p>
-                  Best All-Time:&nbsp;
+                  <span style={{textDecoration: 'underline'}}>Best All-Time</span>
                   <FightData bossPercentage={bestTotal.bossPercentage} fightPercentage={bestTotal.fightPercentage} lastPhase={bestTotal.lastPhase} />
+                  Total Pulls: {totalPulls}
                 </p>
-                <p>Total Pulls: {totalPulls}</p>
               </>
             )
           }

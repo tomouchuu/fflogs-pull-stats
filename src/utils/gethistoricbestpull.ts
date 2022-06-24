@@ -50,7 +50,7 @@ function calculateBestPull(fight: FightDataType): boolean {
   }
 }
 
-export function getTodayBestPull(reports: Reports[]): FightDataType | any {
+export function getHistoricBestPull(reports: Reports[]): FightDataType | any {
   let longListOfPulls: FightDataType[] = [];
   reports.forEach((report: {fights: FightDataType[]}) => {
     longListOfPulls = longListOfPulls.concat(report.fights);
@@ -83,4 +83,4 @@ export function getBestPull(pulls: FightDataType[]): FightDataType {
   return bestPull;
 }
 
-export default getTodayBestPull;
+export default getHistoricBestPull;

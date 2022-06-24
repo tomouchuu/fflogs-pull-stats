@@ -79,7 +79,7 @@ function PullsOnly() {
   const [encounterId, setEncounterId] = useState(0)
   const historicUnixFloatTime = parseFloat(import.meta.env.VITE_HISTORIC_START_DATE)
   const [historicReportsFrom] = useState(historicUnixFloatTime)
-  const todayUnixFloatTime = parseFloat(`${getUnixTime(subHours(new Date(), 12))}000`)
+  const todayUnixFloatTime = parseFloat(`${getUnixTime(subHours(new Date(), 16))}000`)
   const [todayReportsFrom] = useState(todayUnixFloatTime)
 
   const [pullsToday, updatePullsToday] = useState(0)
