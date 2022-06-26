@@ -56,22 +56,25 @@ export function getTodayBestPull(reports: Reports[]): FightDataType | any {
     longListOfPulls = longListOfPulls.concat(report.fights);
   });
   
-  const bestPull = getBestPull(longListOfPulls);
+  const bestPull = getBestPullToday(longListOfPulls);
   return bestPull;
 }
 
-export function getBestPull(pulls: FightDataType[]): FightDataType {
-  let bestPull: FightDataType;
+export function getBestPullToday(pulls: FightDataType[]): FightDataType {
+  let bestPullToday: FightDataType;
 
   const bestPulls = pulls.filter((fight: FightDataType) => {
     return calculateBestPull(fight);
   });
 
   if (bestPulls.length > 0) {
-    bestPull = (bestPulls.pop() as FightDataType);
+    bestPullToday = Object.assign(
+      {}, (bestPulls.pop() as FightDataType)
+    );
+    bestPullToday.fightPercentage = 100 - bestPullToday.fightPercentage;
   } else {
     // There is an error
-    bestPull = {
+    bestPullToday = {
       bossPercentage: 100,
       fightPercentage: 0,
       lastPhase: 0,
@@ -80,7 +83,7 @@ export function getBestPull(pulls: FightDataType[]): FightDataType {
     };
   }
 
-  return bestPull;
+  return bestPullToday;
 }
 
 export default getTodayBestPull;

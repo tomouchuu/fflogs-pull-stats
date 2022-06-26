@@ -29,17 +29,13 @@ function calculateBestPull(fight: FightDataType): boolean {
     bestBossHealth = fight.bossPercentage;
     bestFightPercentage = fight.fightPercentage;
     bestPhase = fight.lastPhase;
-    if (fight.startTime && fight.endTime) {
-      isBestTime(fight);
-    }
+    isBestTime(fight);
     return true;
   } else if (bestFightPercentage === fight.fightPercentage) {
     // Else if we got to the same place, consider boss percentage
     if (bestBossHealth > fight.bossPercentage) {
       bestBossHealth = fight.bossPercentage;
-      if (fight.startTime && fight.endTime) {
-        isBestTime(fight);
-      }
+      isBestTime(fight);
       return true;
     }
     else {
@@ -68,7 +64,10 @@ export function getBestPull(pulls: FightDataType[]): FightDataType {
   });
 
   if (bestPulls.length > 0) {
-    bestPull = (bestPulls.pop() as FightDataType);
+    bestPull = Object.assign(
+      {}, (bestPulls.pop() as FightDataType)
+    );
+    bestPull.fightPercentage = 100 - bestPull.fightPercentage;
   } else {
     // There is an error
     bestPull = {
