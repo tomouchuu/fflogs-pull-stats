@@ -45,11 +45,7 @@ const todayReportQuery = gql`
       reports(userID: $userId, zoneID: $zoneId, startTime: $reportsFrom, limit: 10) {
         data {
            fights(encounterID: $encounterId) {
-            bossPercentage
-            fightPercentage
             lastPhase
-            startTime
-            endTime
           } 
         }
       }
@@ -64,8 +60,6 @@ const historicReportQuery = gql`
       reports(userID: $userId, zoneID: $zoneId, startTime: $reportsFrom, endTime: $reportsTo) {
         data {
            fights(encounterID: $encounterId) {
-            bossPercentage
-            fightPercentage
             lastPhase
           } 
         }
